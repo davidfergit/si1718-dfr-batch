@@ -33,7 +33,7 @@ public class TestFlinkKafkaConsumer {
 		
 		AllWindowFunction<String, String, TimeWindow> function = new AllWindowFunctionImpl();
 		
-		stream.timeWindowAll(Time.seconds(120))
+		stream.timeWindowAll(Time.seconds(600))
 			.apply(function)
 			.filter(x -> Utils.isValid(x))
 			.map(x -> Utils.createTweetDTO(x)).print(); //Coge toda la información cada 10 segundos y la empaquetas

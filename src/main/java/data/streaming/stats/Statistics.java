@@ -20,6 +20,9 @@ public class Statistics implements Runnable {
             	/* Calculamos el número de tweets por (keyword, time, total count) */
             	MongoKeywords.tweetsCalculated();
             	
+            	/* Elimino los elementos de la BBDD */
+            	MongoResearchersRating.getResearchersRatingCollection().deleteMany(document);
+            	
             	/* Sistema de recomendación, calculamos el rating por cada par de investigadoes */
             	MongoResearchersRating.ratingCalculated();
             	
