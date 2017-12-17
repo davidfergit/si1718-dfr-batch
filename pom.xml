@@ -27,13 +27,17 @@
 					<assembleDirectory>target</assembleDirectory>
 					<programs>
 						<program>
+							<mainClass>data.streaming.test.TestGeneralProgram</mainClass>
+							<name>GeneralProgram</name>
+						</program>
+						<!--  <program>
 							<mainClass>data.streaming.test.TestFlinkKafkaProducer</mainClass>
 							<name>producer</name>
 						</program>
 						<program>
 							<mainClass>data.streaming.test.TestFlinkKafkaConsumer</mainClass>
 							<name>consumer</name>
-						</program>
+						</program>-->
 					</programs>
 				</configuration>
 				<executions>
