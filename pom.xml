@@ -27,10 +27,6 @@
 					<assembleDirectory>target</assembleDirectory>
 					<programs>
 						<program>
-							<mainClass>data.streaming.test.TestBatch</mainClass>
-							<name>GeneralProgram</name>
-						</program>
-						<program>
 							<mainClass>data.streaming.test.TestFlinkKafkaProducer</mainClass>
 							<name>producer</name>
 						</program>
@@ -64,7 +60,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>data.streaming.test.TestGeneralProgram</mainClass>
+							<mainClass>data.streaming.test.TestFlinkKafkaConsumer</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
