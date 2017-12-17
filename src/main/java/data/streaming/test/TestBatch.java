@@ -14,7 +14,7 @@ public class TestBatch {
 		Statistics runnable = new Statistics();
 
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-		scheduler.scheduleAtFixedRate(runnable, 0, 600, TimeUnit.SECONDS);
+		scheduler.scheduleAtFixedRate(runnable, 0, 80, TimeUnit.SECONDS);
 		
 	}
 
