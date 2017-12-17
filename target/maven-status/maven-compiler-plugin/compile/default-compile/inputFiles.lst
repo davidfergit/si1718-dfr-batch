@@ -1,6 +1,9 @@
 C:\Users\David\eclipse-workspace\DataStreamingAlumnos\src\main\java\data\streaming\dto\TweetUserDTO.java
+C:\Users\David\eclipse-workspace\DataStreamingAlumnos\src\main\java\data\scraping\jsoup\Researcher.java
 C:\Users\David\eclipse-workspace\DataStreamingAlumnos\src\main\java\data\streaming\test\TestFlinkKafkaProducer.java
+C:\Users\David\eclipse-workspace\DataStreamingAlumnos\src\main\java\data\scraping\jsoup\TestJsoupResearcher.java
 C:\Users\David\eclipse-workspace\DataStreamingAlumnos\src\main\java\data\streaming\utils\Utils.java
+C:\Users\David\eclipse-workspace\DataStreamingAlumnos\src\main\java\data\streaming\test\TestGeneralProgram.java
 C:\Users\David\eclipse-workspace\DataStreamingAlumnos\src\main\java\data\streaming\_aux\ValidTagsTweetEndpoIntinitializer.java
 C:\Users\David\eclipse-workspace\DataStreamingAlumnos\src\main\java\data\streaming\mongo\MongoTweetCalculated.java
 C:\Users\David\eclipse-workspace\DataStreamingAlumnos\src\main\java\data\streaming\utils\LoggingFactory.java
