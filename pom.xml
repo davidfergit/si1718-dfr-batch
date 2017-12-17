@@ -27,6 +27,10 @@
 					<assembleDirectory>target</assembleDirectory>
 					<programs>
 						<program>
+							<mainClass>data.streaming.test.TestBatch</mainClass>
+							<name>batch</name>
+						</program>
+						<program>
 							<mainClass>data.streaming.test.TestFlinkKafkaProducer</mainClass>
 							<name>producer</name>
 						</program>
