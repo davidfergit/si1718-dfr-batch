@@ -82,8 +82,10 @@ public class MongoResearchersRating {
 						
 						Integer rating = findMatchCount(firstDoc.getString("keywords").split(","), secondDoc.getString("keywords").split(","));
 						
-						org.bson.Document docRelationship = releationship(firstDoc.getString("idResearcher"), secondDoc.getString("idResearcher"), rating);
-						totalRelationship.add(docRelationship);
+						if (rating > 0) {
+							org.bson.Document docRelationship = releationship(firstDoc.getString("idResearcher"), secondDoc.getString("idResearcher"), rating);
+							totalRelationship.add(docRelationship);
+						}
 					}
 					
 				}
