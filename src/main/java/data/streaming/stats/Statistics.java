@@ -1,11 +1,18 @@
 package data.streaming.stats;
 
+import java.util.Set;
+
+import org.grouplens.lenskit.ItemRecommender;
+
 import com.mongodb.BasicDBObject;
 
 import data.scraping.jsoup.JsoupResearcher;
+import data.streaming.dto.KeywordDTO;
+import data.streaming.dto.ResearcherDTO;
 import data.streaming.mongo.MongoKeywords;
 import data.streaming.mongo.MongoResearchersRating;
 import data.streaming.mongo.MongoTweetCalculated;
+import data.streaming.utils.Utils;
 
 public class Statistics implements Runnable {
 	
@@ -52,6 +59,9 @@ public class Statistics implements Runnable {
             	 * Sistema de recomendación
             	 * 
             	 * */
+            	//Set<ResearcherDTO> set = Utils.researcherDTOs();
+				//ItemRecommender irec = Utils.getRecommender(set);
+				//Utils.saveModel(irec, set);
             	
             	
             	

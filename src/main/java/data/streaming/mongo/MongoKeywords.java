@@ -112,8 +112,7 @@ public class MongoKeywords {
 //	}
 	
 	public static String[] getKeywords(){
-		String keywords[] = {"Fisica","Sintesis","Ecologia","Ixbilia","Fisicoquimica","Neuroembriologia",
-				"Ingeniería","Mineralogia","Organizacion","Andalucia"};
+		String keywords[] = {"Fisica","Sintesis","Ecologia","Ixbilia","Fisicoquimica","Neuroembriologia","Ingeniería","Mineralogia"};
         
 		return keywords;
 	}
