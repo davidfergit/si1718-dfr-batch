@@ -3,6 +3,7 @@ package data.streaming.utils;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import data.streaming.dto.ResearcherDTO;
 import data.streaming.dto.TweetDTO;
+import data.streaming.mongo.MongoRecommendations;
 import data.streaming.mongo.MongoResearchersRating;
 
 public class Utils {
@@ -102,14 +104,20 @@ public class Utils {
 				(String y) -> new Long(y.hashCode()));
 		Map<Long, List<String>> reverse = set.stream().map((ResearcherDTO x) -> x.getFirstResearcher())
 				.collect(Collectors.groupingBy((String x) -> new Long(x.hashCode())));
+		List<org.bson.Document> result = new ArrayList<>();
 
 		for (String key : keys.keySet()) {
 			List<ScoredId> recommendations = irec.recommend(keys.get(key), MAX_RECOMMENDATIONS);
 			if (recommendations.size() > 0) {
-				System.out.println(key + "->" + recommendations.stream().map(x -> reverse.get(x.getId()).get(0))
-						.collect(Collectors.toList()));
+				/* System.out.println(key + "->" + recommendations.stream().map(x -> reverse.get(x.getId()).get(0))
+						.collect(Collectors.toList()));*/
+				result.add(MongoRecommendations.recommendation(key, recommendations.stream().map(x -> reverse.get(x.getId()).get(0))
+						.collect(Collectors.toList())));
 			}
 		}
+		
+		/* Almaceno las recomendaciones en mLab*/
+		MongoRecommendations.save(result);
 	}
 	
 	public static Set<ResearcherDTO> researcherDTOs() {

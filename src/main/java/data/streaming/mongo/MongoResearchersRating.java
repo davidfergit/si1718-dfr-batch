@@ -67,7 +67,7 @@ public class MongoResearchersRating {
 	/* Método usado para calcular todos los tweets almacenados */
 	public static void ratingCalculated() {
 		
-		Iterable<org.bson.Document> researchersCopy1 = MongoKeywords.getResearchersCollection().find().limit(150);
+		Iterable<org.bson.Document> researchersCopy1 = MongoKeywords.getResearchersCollection().find().limit(2000);
 		Iterable<org.bson.Document> researchersCopy2 = researchersCopy1;
 		List<org.bson.Document> totalRelationship = new ArrayList<>();
 		int lote = 0;

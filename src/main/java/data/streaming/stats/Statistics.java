@@ -10,6 +10,7 @@ import data.scraping.jsoup.JsoupResearcher;
 import data.streaming.dto.KeywordDTO;
 import data.streaming.dto.ResearcherDTO;
 import data.streaming.mongo.MongoKeywords;
+import data.streaming.mongo.MongoRecommendations;
 import data.streaming.mongo.MongoResearchersRating;
 import data.streaming.mongo.MongoTweetCalculated;
 import data.streaming.utils.Utils;
@@ -21,7 +22,7 @@ public class Statistics implements Runnable {
             System.out.println("Sleeping ...");
             try {
             	
-            	//BasicDBObject document = new BasicDBObject();
+            	BasicDBObject document = new BasicDBObject();
             	
             	/**
             	 * Tweets cálculados
@@ -59,9 +60,14 @@ public class Statistics implements Runnable {
             	 * Sistema de recomendación
             	 * 
             	 * */
-            	Set<ResearcherDTO> set = Utils.researcherDTOs();
-				ItemRecommender irec = Utils.getRecommender(set);
-				Utils.saveModel(irec, set);
+            	
+            	/* Elimino los elementos de la collection researchers rating */
+            	//MongoRecommendations.getRecommendationsCollection().deleteMany(document);
+            	
+            	/* Genero las recomendaciones */
+            	//Set<ResearcherDTO> set = Utils.researcherDTOs();
+				//ItemRecommender irec = Utils.getRecommender(set);
+				//Utils.saveModel(irec, set);
             	
             	
             	
