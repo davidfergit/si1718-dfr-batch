@@ -98,7 +98,6 @@ public class Utils {
 	}
 	
 	public static void saveModel(ItemRecommender irec, Set<ResearcherDTO> set) throws IOException {
-		System.out.println("saveModel");
 		Map<String, Long> keys = Maps.asMap(set.stream().map((ResearcherDTO x) -> x.getFirstResearcher()).collect(Collectors.toSet()),
 				(String y) -> new Long(y.hashCode()));
 		Map<Long, List<String>> reverse = set.stream().map((ResearcherDTO x) -> x.getFirstResearcher())
@@ -114,9 +113,8 @@ public class Utils {
 	}
 	
 	public static Set<ResearcherDTO> researcherDTOs() {
-		System.out.println("hola");
 		/* Obtengo las keywords con su correspondiente rating */
-		Iterable<org.bson.Document> ratings = MongoResearchersRating.getResearchersRatingCollection().find().limit(10);
+		Iterable<org.bson.Document> ratings = MongoResearchersRating.getResearchersRatingCollection().find();
 		Set<ResearcherDTO> result = new HashSet<>();
 	
 		for (org.bson.Document dto: ratings) {
@@ -126,7 +124,6 @@ public class Utils {
 			researcherDTO.setRating(dto.getInteger("rating"));
 			result.add(researcherDTO);
 		}
-		System.out.println(result.toString());
 		return result;
 	}
 
