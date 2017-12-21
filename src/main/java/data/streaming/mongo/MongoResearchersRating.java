@@ -35,7 +35,7 @@ public class MongoResearchersRating {
 		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
         String createdAt = formatter.format(sysdate);
 		
-		org.bson.Document document = new org.bson.Document("firstReseracher", firstResearcher)
+		org.bson.Document document = new org.bson.Document("firstResearcher", firstResearcher)
                 .append("secondResearcher", secondResearcher)
                 .append("rating", rating)
                 .append("createdAt", createdAt);
