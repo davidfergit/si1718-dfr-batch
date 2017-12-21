@@ -45,9 +45,6 @@ public class Statistics implements Runnable {
             	 * 
             	 * */
             	
-            	/* Elimino los elementos de la collection researchers */
-            	MongoKeywords.getResearchersCollection().deleteMany(document);
-            	
             	/* Web scraping diario de investigadores. Se almacenará en una BBDD auxiliar */
             	JsoupResearcher.dailyScraping();
             	
