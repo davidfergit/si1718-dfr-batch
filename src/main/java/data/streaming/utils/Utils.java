@@ -10,8 +10,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.grouplens.lenskit.ItemRecommender;
+import org.grouplens.lenskit.ItemScorer;
+import org.grouplens.lenskit.Recommender;
+import org.grouplens.lenskit.RecommenderBuildException;
+import org.grouplens.lenskit.core.LenskitConfiguration;
+import org.grouplens.lenskit.core.LenskitRecommender;
+import org.grouplens.lenskit.data.dao.EventCollectionDAO;
+import org.grouplens.lenskit.data.dao.EventDAO;
 import org.grouplens.lenskit.data.event.Event;
 import org.grouplens.lenskit.data.event.MutableRating;
+import org.grouplens.lenskit.knn.user.UserUserItemScorer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -52,6 +61,21 @@ public class Utils {
 			result = false;
 		}
 		return result;
+	}
+	
+	public static ItemRecommender getRecommender(Set<KeywordDTO> dtos) throws RecommenderBuildException {
+		LenskitConfiguration config = new LenskitConfiguration();
+		EventDAO myDAO = EventCollectionDAO.create(createEventCollection());
+
+		config.bind(EventDAO.class).to(myDAO);
+		config.bind(ItemScorer.class).to(UserUserItemScorer.class);
+		// config.bind(BaselineScorer.class,
+		// ItemScorer.class).to(UserMeanItemScorer.class);
+		// config.bind(UserMeanBaseline.class,
+		// ItemScorer.class).to(ItemMeanRatingItemScorer.class);
+
+		Recommender rec = LenskitRecommender.build(config);
+		return rec.getItemRecommender();
 	}
 	
 	private static Collection<? extends Event> createEventCollection() {
