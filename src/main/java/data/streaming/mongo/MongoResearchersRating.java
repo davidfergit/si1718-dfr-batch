@@ -67,9 +67,10 @@ public class MongoResearchersRating {
 	/* Método usado para calcular todos los tweets almacenados */
 	public static void ratingCalculated() {
 		
-		Iterable<org.bson.Document> researchersCopy1 = MongoKeywords.getResearchersCollection().find().limit(100);
+		Iterable<org.bson.Document> researchersCopy1 = MongoKeywords.getResearchersCollection().find().limit(150);
 		Iterable<org.bson.Document> researchersCopy2 = researchersCopy1;
 		List<org.bson.Document> totalRelationship = new ArrayList<>();
+		int lote = 0;
 		
 		for (org.bson.Document firstDoc: researchersCopy1) {
 			
@@ -85,8 +86,18 @@ public class MongoResearchersRating {
 						if (rating > 0) {
 							org.bson.Document docRelationship = releationship(firstDoc.getString("idResearcher"), secondDoc.getString("idResearcher"), rating);
 							totalRelationship.add(docRelationship);
-						}
-					}
+							lote++;
+							
+							/* Añado lotes de 1000 elementos */
+							if (lote == 10000 && totalRelationship != null && !totalRelationship.isEmpty() && totalRelationship.size() > 0) {
+								/* Aqui almaceno cada researcher con su relación con el resto y su rating */
+								save(totalRelationship);
+								lote=0;
+								totalRelationship = new ArrayList<>();
+							}
+						}//Cierra la condición rating
+						
+					}//Cierra la primera condición
 					
 				}
 			}
@@ -96,6 +107,7 @@ public class MongoResearchersRating {
 		if (totalRelationship != null && !totalRelationship.isEmpty() && totalRelationship.size() > 0) {
 			/* Aqui almaceno cada researcher con su relación con el resto y su rating */
 			save(totalRelationship);
+			System.out.println("********************** FIN ***************************");
 		}
 		
 	}

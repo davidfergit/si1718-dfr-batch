@@ -14,18 +14,39 @@ public class Statistics implements Runnable {
             System.out.println("Sleeping ...");
             try {
             	
-            	/* Elimino los elementos de la BBDD */
             	BasicDBObject document = new BasicDBObject();
+            	
+            	/**
+            	 * Tweets cálculados
+            	 * 
+            	 * */
+            	
+            	/* Elimino los elementos de la collection tweetsCalculated */
     			MongoTweetCalculated.getTweetsCalculatedCollection().deleteMany(document);
             	
             	/* Calculamos el número de tweets por (keyword, time, total count) */
             	MongoKeywords.tweetsCalculated();
             	
-            	/* Elimino los elementos de la BBDD */
+    			
+    			/**
+            	 * Ratings
+            	 * 
+            	 * */
+    			
+            	/* Elimino los elementos de la collection researchers rating */
             	MongoResearchersRating.getResearchersRatingCollection().deleteMany(document);
             	
             	/* Sistema de recomendación, calculamos el rating por cada par de investigadoes */
             	MongoResearchersRating.ratingCalculated();
+            	
+            	
+            	/**
+            	 * Web scraping
+            	 * 
+            	 * */
+            	
+            	/* Elimino los elementos de la collection researchers */
+            	MongoKeywords.getResearchersCollection().deleteMany(document);
             	
             	/* Web scraping diario de investigadores. Se almacenará en una BBDD auxiliar */
             	JsoupResearcher.dailyScraping();
