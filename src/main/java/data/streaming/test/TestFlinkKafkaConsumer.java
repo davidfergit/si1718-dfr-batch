@@ -36,7 +36,7 @@ public class TestFlinkKafkaConsumer {
 		stream.timeWindowAll(Time.seconds(60))
 			.apply(function)
 			.filter(x -> Utils.isValid(x))
-			.map(x -> Utils.createTweetDTO(x)).print(); //Coge toda la información cada 10 segundos y la empaquetas
+			.map(x -> Utils.createTweetDTO(x)).print(); //Coge toda la informacion cada 60 segundos y la empaquetas
 
 		//stream.print();
 		// TODO 4: Hacer algo mÃ¡s interesante que mostrar por pantalla.
