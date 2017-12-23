@@ -8,8 +8,11 @@ import com.mongodb.BasicDBObject;
 
 import data.scraping.jsoup.JsoupResearcher;
 import data.streaming.dto.ResearcherDTO;
+import data.streaming.mongo.MongoDepartments;
+import data.streaming.mongo.MongoGroups;
 import data.streaming.mongo.MongoKeywords;
 import data.streaming.mongo.MongoRecommendations;
+import data.streaming.mongo.MongoResearchers;
 import data.streaming.mongo.MongoResearchersRating;
 import data.streaming.mongo.MongoTweetCalculated;
 import data.streaming.mongo.MongoTweetLanguageCalculated;
@@ -45,6 +48,30 @@ public class Statistics implements Runnable {
             	
             	/* Calculamos el número de tweets por (language, time, total count) */
             	MongoKeywords.tweetsLanguageCalculated();
+            	
+            	/**
+            	 * Departamentos cálculados
+            	 * 
+            	 * */
+            	
+            	/* Calculamos los departamentos que tengan más de 100 investigadores */
+            	MongoDepartments.viewDepartmentsCalculated();
+            	
+            	/**
+            	 * Grupos cálculados
+            	 * 
+            	 * */
+            	
+            	/* Calculamos los grupos que tengan más de 40 investigadores */
+            	MongoGroups.viewGroupsCalculated();
+            	
+            	/**
+            	 * Researchers cálculados
+            	 * 
+            	 * */
+            	
+            	/* Calculamos los investigadores que tienen/no tienen ORCID */
+            	MongoResearchers.viewReseachersCalculated();
             	
     			
     			/**
