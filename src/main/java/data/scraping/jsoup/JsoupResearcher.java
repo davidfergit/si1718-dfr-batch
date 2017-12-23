@@ -21,6 +21,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 public class JsoupResearcher {
 	
@@ -29,7 +30,8 @@ public class JsoupResearcher {
     private static final MongoClient client = new MongoClient(uri);
     private static MongoDatabase db = client.getDatabase(uri.getDatabase());
     private static final MongoCollection<org.bson.Document> docResearchers = db.getCollection("dailyResearchers");
-	
+    private static final MongoCollection<org.bson.Document> docResearchersAux = db.getCollection("researchers");
+    
 	public static void dailyScraping() throws MalformedURLException, IOException {
 		
     	/* Elimino los elementos de la collection dailyResearchers */
@@ -180,19 +182,24 @@ public class JsoupResearcher {
                             .append("departmentViewURL", null)
                             .append("departmentName", null)
                     		.append("createdAt", createdAt);
-    
+                    
                     /* INSERTAR EL DOCUMENTO DE TODOS LOS RESEARCHER EN UNA SOLA LLAMADA (LLAMANDO A MLAB DIRECTAMENTE) */
-                    if (docResearcher != null) {
+                    /* Compruebo si el investigador que queremos insertar existe ya en la base de datos y de ser así se descarta. */
+                    long checkNewResearcher = docResearchersAux.count(Filters.eq("idResearcher",researcher.getIdResearcher()));
+                    
+                    if (docResearcher != null && checkNewResearcher == 0 ) {
                     	researchersToInsert.add(docResearcher);
+                    	System.out.println("NUEVO");
+                    	/* INCREMENTO LA VARIABLE LOTERESEARCHER */
+                        loteResearchers++;
+                    }else {
+                    	System.out.println("YA EXISTE");
                     }
-   
-                    /* INCREMENTO LA VARIABLE LOTERESEARCHER */
-                    loteResearchers++;
                 }
             }
             
             /* USADO PARA LOTES */
-            if (loteResearchers == 500) {
+            if (loteResearchers == 500 && researchersToInsert != null && researchersToInsert.size() > 0) {
             	/* INSERTAR EL DOCUMENTO DE TODOS LOS RESEARCHER EN UNA SOLA LLAMADA (LLAMANDO A MLAB DIRECTAMENTE) */
                 docResearchers.insertMany(researchersToInsert);
                 researchersToInsert = new ArrayList<>();

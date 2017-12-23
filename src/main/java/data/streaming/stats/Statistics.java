@@ -7,7 +7,6 @@ import org.grouplens.lenskit.ItemRecommender;
 import com.mongodb.BasicDBObject;
 
 import data.scraping.jsoup.JsoupResearcher;
-import data.streaming.dto.KeywordDTO;
 import data.streaming.dto.ResearcherDTO;
 import data.streaming.mongo.MongoKeywords;
 import data.streaming.mongo.MongoRecommendations;
@@ -30,10 +29,10 @@ public class Statistics implements Runnable {
             	 * */
             	
             	/* Elimino los elementos de la collection tweetsCalculated */
-    			//MongoTweetCalculated.getTweetsCalculatedCollection().deleteMany(document);
+    			MongoTweetCalculated.getTweetsCalculatedCollection().deleteMany(document);
             	
             	/* Calculamos el número de tweets por (keyword, time, total count) */
-            	//MongoKeywords.tweetsCalculated();
+            	MongoKeywords.tweetsCalculated();
             	
     			
     			/**
@@ -42,10 +41,10 @@ public class Statistics implements Runnable {
             	 * */
     			
             	/* Elimino los elementos de la collection researchers rating */
-            	//MongoResearchersRating.getResearchersRatingCollection().deleteMany(document);
+            	MongoResearchersRating.getResearchersRatingCollection().deleteMany(document);
             	
             	/* Sistema de recomendación, calculamos el rating por cada par de investigadoes */
-            	//MongoResearchersRating.ratingCalculated();
+            	MongoResearchersRating.ratingCalculated();
             	
             	
             	/**
@@ -53,8 +52,8 @@ public class Statistics implements Runnable {
             	 * 
             	 * */
             	
-            	/* Web scraping diario de investigadores. Se almacenará en una BBDD auxiliar */
-            	//JsoupResearcher.dailyScraping();
+            	/* Web scraping diario de investigadores. Se almacenarán en una collection auxiliar. */
+            	JsoupResearcher.dailyScraping();
             	
             	/**
             	 * Sistema de recomendación
@@ -62,12 +61,12 @@ public class Statistics implements Runnable {
             	 * */
             	
             	/* Elimino los elementos de la collection researchers rating */
-            	//MongoRecommendations.getRecommendationsCollection().deleteMany(document);
+            	MongoRecommendations.getRecommendationsCollection().deleteMany(document);
             	
             	/* Genero las recomendaciones */
-            	//Set<ResearcherDTO> set = Utils.researcherDTOs();
-				//ItemRecommender irec = Utils.getRecommender(set);
-				//Utils.saveModel(irec, set);
+            	Set<ResearcherDTO> set = Utils.researcherDTOs();
+				ItemRecommender irec = Utils.getRecommender(set);
+				Utils.saveModel(irec, set);
             	
             	
             	
