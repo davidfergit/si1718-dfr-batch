@@ -7,6 +7,7 @@ import java.util.List;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
@@ -45,12 +46,7 @@ public class MongoKeywords {
 	public static org.bson.Document convertTweetDTOToDocument(TweetDTO tweet){
 		org.bson.Document document = new org.bson.Document("createdAt", tweet.getCreatedAt())
                 .append("text", tweet.getText())
-                .append("language", tweet.getLanguage())
-                .append("idStr", tweet.getUser().getIdStr())
-                .append("name", tweet.getUser().getName())
-                .append("screenName", tweet.getUser().getScreenName())
-                .append("friends", tweet.getUser().getFriends())
-                .append("followers", tweet.getUser().getFollowers());
+                .append("language", tweet.getLanguage());
 		
 		return document;
 	}
@@ -61,12 +57,7 @@ public class MongoKeywords {
 		for (TweetDTO tweet: tweets) {
 			org.bson.Document document = new org.bson.Document("createdAt", tweet.getCreatedAt())
 	                .append("text", tweet.getText())
-	                .append("language", tweet.getLanguage())
-	                .append("idStr", tweet.getUser().getIdStr())
-	                .append("name", tweet.getUser().getName())
-	                .append("screenName", tweet.getUser().getScreenName())
-	                .append("friends", tweet.getUser().getFriends())
-	                .append("followers", tweet.getUser().getFollowers());
+	                .append("language", tweet.getLanguage());
 			documents.add(document);
 		}
 		return documents;
@@ -117,6 +108,18 @@ public class MongoKeywords {
 		return keywords;
 	}
 	
+	/* Método usado para obtener todos los languages de los tweets */
+	public static List<String> distinctLanguages() {
+		MongoCursor<String> cursor = docTweets.distinct("language", String.class).iterator();
+		List<String> languages = new ArrayList<String>();
+	
+		while (cursor.hasNext()) {
+			languages.add(cursor.next());
+		}
+		
+		return languages;
+	}
+	
 	/******************************************************* MÉTODOS PARA EL BATCH ****************************************************/
 	
 	/* Método usado para calcular todos los tweets almacenados */
@@ -150,6 +153,48 @@ public class MongoKeywords {
 			/********************** Almacena los cálculos en BBDD ***********************/
 			
 			MongoTweetCalculated.save(statistics);
+			
+			/********************** Cierra conexión ***********************/
+			
+			
+		}//Cierra el if
+		
+		
+		
+		return statistics;
+	}
+	
+	/* Método usado para contar el número de veces que aparece un idioma en concreto (pt, es, en, etc) */
+	public static List<org.bson.Document> tweetsLanguageCalculated() {
+		List<org.bson.Document> statistics = new ArrayList<>();
+		List<String> languages = distinctLanguages();
+		
+		if (languages != null && languages.size() > 0) {
+			
+			for (String language: languages) {
+			    
+			    for (org.bson.Document doc: getTweetsCollection().aggregate(
+			    		
+			    		Arrays.asList(
+			    	              Aggregates.match(Filters.regex("language", ".*" + language + ".*")),
+			    	              Aggregates.group("$createdAt", Accumulators.sum("count", 1))
+			    	      )
+			    		
+			    		)) {
+			    	
+			    	/* Genero documento*/
+			    	System.out.println(language + " --> " + doc.toJson());
+			    	String date = doc.getString("_id");
+			    	int count = doc.getInteger("count");
+			    	statistics.add(MongoTweetLanguageCalculated.convertDocument(language, date, count));
+			    	
+			    }//Cierra el bucle que recorre todos los tweets
+			    
+			}//Cierra el bucle keywords
+			
+			/********************** Almacena los cálculos en BBDD ***********************/
+			
+			MongoTweetLanguageCalculated.save(statistics);
 			
 			/********************** Cierra conexión ***********************/
 			

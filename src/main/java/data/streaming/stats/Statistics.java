@@ -12,6 +12,7 @@ import data.streaming.mongo.MongoKeywords;
 import data.streaming.mongo.MongoRecommendations;
 import data.streaming.mongo.MongoResearchersRating;
 import data.streaming.mongo.MongoTweetCalculated;
+import data.streaming.mongo.MongoTweetLanguageCalculated;
 import data.streaming.utils.Utils;
 
 public class Statistics implements Runnable {
@@ -24,7 +25,7 @@ public class Statistics implements Runnable {
             	BasicDBObject document = new BasicDBObject();
             	
             	/**
-            	 * Tweets cálculados
+            	 * Tweets cálculados (keyword, time, total count)
             	 * 
             	 * */
             	
@@ -33,6 +34,17 @@ public class Statistics implements Runnable {
             	
             	/* Calculamos el número de tweets por (keyword, time, total count) */
             	MongoKeywords.tweetsCalculated();
+            	
+            	/**
+            	 * Tweets cálculados (language, time, total count)
+            	 * 
+            	 * */
+            	
+            	/* Elimino los elementos de la collection tweetsLanguageCalculated */
+    			MongoTweetLanguageCalculated.getTweetsLanguageCalculatedCollection().deleteMany(document);
+            	
+            	/* Calculamos el número de tweets por (language, time, total count) */
+            	MongoKeywords.tweetsLanguageCalculated();
             	
     			
     			/**
