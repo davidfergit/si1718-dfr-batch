@@ -38,6 +38,9 @@ public class JsoupResearcher {
 		BasicDBObject document = new BasicDBObject();
 		docResearchers.deleteMany(document);
 		
+		/* Genero researchers nuevos para testear la funcionalidad de insertar aquellos investigadores que hayan aparecido recientemente. */
+		createRandomResearchers(3);
+		
 		/* Obtengo todos los investigadores */
 		Document researchers = Jsoup
                 .connect(URL_BASE)
@@ -218,6 +221,39 @@ public class JsoupResearcher {
         
         /* Cierro la conexion de mongoDB */
         client.close();
+		
+	}
+	
+	public static void createRandomResearchers(int numberOfResearchers) {
+		List<org.bson.Document> researchersToInsert = new ArrayList<org.bson.Document>();
+		
+		for (int i=1; i <= numberOfResearchers; i++) {
+			//Convierto la fecha de Twitter a Date
+    		Date sysdate = new Date();
+    		
+    		//Formato dd/MM/yyyy
+    		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+            String createdAt = formatter.format(sysdate);
+    		
+            org.bson.Document docResearcher = new org.bson.Document("idResearcher", "investigador"+i)
+                    .append("name", "Investigador Name " + i)
+                    .append("phone", "Investigador Phone " + i)
+                    .append("professionalSituation", "Active")
+                    .append("orcid", null)
+                    .append("researcherId", null)
+                    .append("link", null)
+                    .append("idGroup", null)
+                    .append("keywords", "investigador" + i)
+                    .append("viewURL", "https://si1718-dfr-researchers.herokuapp.com/#!/researchers/" + "investigador" + i + "/view")
+                    .append("idDepartment", null)
+                    .append("departmentViewURL", null)
+                    .append("departmentName", null)
+            		.append("createdAt", createdAt);
+            
+            researchersToInsert.add(docResearcher);
+		}
+		
+		docResearchers.insertMany(researchersToInsert);
 		
 	}
 

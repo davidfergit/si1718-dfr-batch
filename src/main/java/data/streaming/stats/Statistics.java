@@ -91,7 +91,7 @@ public class Statistics implements Runnable {
             	 * 
             	 * */
             	
-            	/* Web scraping diario de investigadores. Se almacenarán en una collection auxiliar. */
+            	/* Web scraping diario de investigadores nuevos. Se almacenarán en una collection auxiliar. */
             	JsoupResearcher.dailyScraping();
             	
             	/**
