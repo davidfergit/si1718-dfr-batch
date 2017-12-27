@@ -2,6 +2,9 @@
 package data.streaming.test;
 
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -11,6 +14,7 @@ import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 
 import data.streaming._aux.ValidTagsTweetEndpoIntinitializer;
 import data.streaming.mongo.MongoKeywords;
+import data.streaming.stats.ProducerDynamically;
 import data.streaming.utils.LoggingFactory;
 
 public class TestFlinkKafkaProducer {
@@ -18,8 +22,13 @@ public class TestFlinkKafkaProducer {
 	private static final Integer PARALLELISM = 2;
 
 	public static void main(String... args) throws Exception {
+		
+		ProducerDynamically runnable = new ProducerDynamically();
 
-		TwitterSource twitterSource = new TwitterSource(LoggingFactory.getTwitterCredentias());
+		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		scheduler.scheduleAtFixedRate(runnable, 0, 120, TimeUnit.SECONDS);
+
+		/*TwitterSource twitterSource = new TwitterSource(LoggingFactory.getTwitterCredentias());
 
 		// Establecemos el filtro
 		twitterSource.setCustomEndpointInitializer(new ValidTagsTweetEndpoIntinitializer(MongoKeywords.getKeywords()));
@@ -44,7 +53,7 @@ public class TestFlinkKafkaProducer {
 
 		stream.print();
 
-		env.execute("Twitter Streaming Producer");
+		env.execute("Twitter Streaming Producer");*/
 	}
 
 }

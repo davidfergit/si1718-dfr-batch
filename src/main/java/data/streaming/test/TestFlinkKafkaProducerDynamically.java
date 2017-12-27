@@ -14,7 +14,7 @@ public class TestFlinkKafkaProducerDynamically {
 		ProducerDynamically runnable = new ProducerDynamically();
 
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-		scheduler.scheduleAtFixedRate(runnable, 0, 60, TimeUnit.SECONDS);
+		scheduler.scheduleAtFixedRate(runnable, 0, 120, TimeUnit.SECONDS);
 		
 	}
 
