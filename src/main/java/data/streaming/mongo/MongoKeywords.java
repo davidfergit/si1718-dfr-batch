@@ -21,6 +21,7 @@ public class MongoKeywords {
     private static MongoDatabase db = client.getDatabase(uri.getDatabase());
     private static final MongoCollection<org.bson.Document> docResearchers = db.getCollection("researchers");
     private static final MongoCollection<org.bson.Document> docTweets = db.getCollection("tweets");
+    private static final MongoCollection<org.bson.Document> docKeywords = db.getCollection("keywords");
     
     /* Método usado para obtener la collection de researchers */
 	public static MongoCollection<org.bson.Document> getResearchersCollection(){
@@ -103,8 +104,9 @@ public class MongoKeywords {
 //	}
 	
 	public static String[] getKeywords(){
-		String keywords[] = {"Fisica","Sintesis","Ecologia","Ixbilia","Fisicoquimica","Neuroembriologia","Ingeniería","Mineralogia"};
-        
+		//String keywords[] = {"Fisica","Sintesis","Ecologia","Ixbilia","Fisicoquimica","Neuroembriologia","Ingeniería","Mineralogia"};
+		String keywords[] = docKeywords.find().first().get("keywords").toString().split(",");
+		
 		return keywords;
 	}
 	
