@@ -32,10 +32,10 @@ public class TestFlinkKafkaProducer {
 
 		env.setParallelism(PARALLELISM);
 		
-		env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
+		/*env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
 		  3, // number of restart attempts
 		  Time.of(120, TimeUnit.SECONDS) // delay
-		));
+		));*/
 
 		// Añadimos la fuente y generamos el stream como la salida de las llamadas
 		// asíncronas para salvar los datos en MongoDB
