@@ -1,35 +1,48 @@
+package data.streaming.stats;
 
-package data.streaming.test;
-
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.flink.api.common.restartstrategy.RestartStrategies;
-import org.apache.flink.api.common.time.Time;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer010;
 import org.apache.flink.streaming.connectors.twitter.TwitterSource;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 
 import data.streaming._aux.ValidTagsTweetEndpoIntinitializer;
 import data.streaming.mongo.MongoKeywords;
 import data.streaming.utils.LoggingFactory;
 
-public class TestFlinkKafkaProducer {
-
+public class ProducerJob implements org.quartz.Job{
+	
 	private static final Integer PARALLELISM = 2;
 
-	public static void main(String... args) throws Exception {
-		
-		for (String s: MongoKeywords.getKeywords()) {
+	public ProducerJob() {
+    }
+
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+        System.err.println("Hello World!  ProducerJob is executing.");
+        
+        for (String s: MongoKeywords.getKeywords()) {
     		System.out.println(s);
     	}
     	
     	System.out.println("RECALCULATED KEYWORDS");
     	System.out.println("*******************************************************");
 
-		TwitterSource twitterSource = new TwitterSource(LoggingFactory.getTwitterCredentias());
+		TwitterSource twitterSource = null;
+		try {
+			twitterSource = new TwitterSource(LoggingFactory.getTwitterCredentias());
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// Establecemos el filtro
 		twitterSource.setCustomEndpointInitializer(new ValidTagsTweetEndpoIntinitializer(MongoKeywords.getKeywords()));
@@ -48,7 +61,16 @@ public class TestFlinkKafkaProducer {
 		// asíncronas para salvar los datos en MongoDB
 		DataStream<String> stream = env.addSource(twitterSource);
 
-		Properties props = LoggingFactory.getCloudKarafkaCredentials();
+		Properties props = null;
+		try {
+			props = LoggingFactory.getCloudKarafkaCredentials();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		FlinkKafkaProducer010.FlinkKafkaProducer010Configuration<String> config = FlinkKafkaProducer010
 				.writeToKafkaWithTimestamps(stream, props.getProperty("CLOUDKARAFKA_TOPIC").trim(), new SimpleStringSchema(),
@@ -59,7 +81,12 @@ public class TestFlinkKafkaProducer {
 
 		stream.print();
 
-		env.execute("Twitter Streaming Producer");
-	}
-
+		try {
+			env.execute("Twitter Streaming Producer");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+	
 }
