@@ -23,17 +23,17 @@ public class TestFlinkKafkaProducerQuartz {
 	  	// and start it off
 	  	scheduler.start();
 	
-		// define the job and tie it to our MyJob class
+		// define the job and tie it to our ProducerJob class
 	  	JobDetail job = newJob(ProducerJob.class)
 		      .withIdentity("job1", "group1")
 		      .build();
 
-	  	// Trigger the job to run now, and then repeat every 40 seconds
+	  	// Trigger the job to run now, and then repeat every 60 seconds
 	  	Trigger trigger = newTrigger()
 	  			.withIdentity("trigger1", "group1")
 	  			.startNow()
 	  			.withSchedule(simpleSchedule()
-	              .withIntervalInSeconds(15)
+	              .withIntervalInSeconds(3600)
 	              .repeatForever())
 	  			.build();
 
