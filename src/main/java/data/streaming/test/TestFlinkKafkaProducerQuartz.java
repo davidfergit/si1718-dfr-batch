@@ -28,7 +28,7 @@ public class TestFlinkKafkaProducerQuartz {
 		      .withIdentity("job1", "group1")
 		      .build();
 
-	  	// Trigger the job to run now, and then repeat every 60 seconds
+	  	// Trigger the job to run now, and then repeat every 3600 seconds
 	  	Trigger trigger = newTrigger()
 	  			.withIdentity("trigger1", "group1")
 	  			.startNow()
