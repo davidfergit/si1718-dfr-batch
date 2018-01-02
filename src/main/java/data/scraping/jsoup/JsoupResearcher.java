@@ -8,8 +8,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -72,7 +76,6 @@ public class JsoupResearcher {
             		Element top = elementos.get(0).getElementsByTag("p").get(0);
             		List<String> tagsSplit = Arrays.asList(top.toString().replace("<p>", "").replace("</p>", "").split("<br>"));
             		Researcher researcher = new Researcher();
-            		String keywords = null;
             		
             		/* Nombre */
             		if (tagsSplit.size() >= 0 && tagsSplit.get(0) != null && !tagsSplit.get(0).equals("")) {
@@ -159,10 +162,44 @@ public class JsoupResearcher {
             			researcher.setIdResearcher(link.split("=")[1]);
             		}
             		
-            		/* Genero keyword a todos los investigadores que tengan un grupo asignado */
+            		/* ASIGNACION DE KEYWORDS */
+            		List<String> forbiddenWords = Arrays.asList("a","ante","bajo","cabe","con","contra","de","desde","en","entre","hacia","hasta","para","por",
+            				"según","sin","so","sobre","tras","durante","mediante","excepto","salvo","incluso","más","menos",
+            				"el","la","los","las","un","uno","una","unos","unas", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", 
+            				"ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
+            		Set<String> keywordsAux = new HashSet<String>();
+            		
             		if (researcher.getGroup() != null && !researcher.getGroup().equals("")) {
-            			keywords = researcher.getGroup().replace(" ", ",");
+            			keywordsAux.addAll(Arrays.asList(researcher.getGroup().toLowerCase().split(" ")));
+            		}else if (researcher.getDepartment() != null && !researcher.getDepartment().equals("")) {
+            			keywordsAux.addAll(Arrays.asList(researcher.getDepartment().toLowerCase().split(" ")));
+            		}else if (researcher.getProfessionalSituation() != null && !researcher.getProfessionalSituation().equals("")){
+            			keywordsAux.addAll(Arrays.asList(researcher.getProfessionalSituation().toLowerCase().split(" ")));
+            		}else if (researcher.getName() != null && !researcher.getName().equals("")){
+            			keywordsAux.addAll(Arrays.asList(researcher.getName().toLowerCase().split(" ")));
+            			keywordsAux.add("key-us");
+            			keywordsAux.add("universidad");
+            			keywordsAux.add("sevilla");
+            		}else {
+            			keywordsAux.add("key-us");
+            			keywordsAux.add("universidad");
+            			keywordsAux.add("sevilla");
             		}
+            		
+            		/* Elimino las palabras prohibidas */
+            		keywordsAux.removeAll(forbiddenWords);
+            		
+            		/* Elimino los espacios en blanco */
+            		keywordsAux.removeAll(keywordsAux.stream()
+            			      .filter(s -> s.equals(""))
+            			      .collect(Collectors.toSet()));
+            		
+            		/* Elimino los nulos */
+            		keywordsAux.removeIf(Objects::isNull);
+            		
+            		String keywordsCommaSeparated = keywordsAux.stream()
+                            .map(String::toLowerCase)
+                            .collect(Collectors.joining(","));
             		
             		//Convierto la fecha de Twitter a Date
             		Date sysdate = new Date();
@@ -179,7 +216,7 @@ public class JsoupResearcher {
                             .append("researcherId", researcher.getResearcherId())
                             .append("link", researcher.getLink())
                             .append("idGroup", researcher.getGroup())
-                            .append("keywords", keywords)
+                            .append("keywords", keywordsCommaSeparated)
                             .append("viewURL", "https://si1718-dfr-researchers.herokuapp.com/#!/researchers/" + researcher.getIdResearcher() + "/view")
                             .append("idDepartment", researcher.getDepartment())
                             .append("departmentViewURL", null)
