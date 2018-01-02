@@ -2,10 +2,6 @@
 package data.streaming.test;
 
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.flink.api.common.restartstrategy.RestartStrategies;
-import org.apache.flink.api.common.time.Time;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer010;
@@ -21,13 +17,6 @@ public class TestFlinkKafkaProducer {
 	private static final Integer PARALLELISM = 2;
 
 	public static void main(String... args) throws Exception {
-		
-		for (String s: MongoKeywords.getKeywords()) {
-    		System.out.println(s);
-    	}
-    	
-    	System.out.println("RECALCULATED KEYWORDS");
-    	System.out.println("*******************************************************");
 
 		TwitterSource twitterSource = new TwitterSource(LoggingFactory.getTwitterCredentias());
 
@@ -38,11 +27,6 @@ public class TestFlinkKafkaProducer {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
 		env.setParallelism(PARALLELISM);
-		
-		/*env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
-		  3, // number of restart attempts
-		  Time.of(120, TimeUnit.SECONDS) // delay
-		));*/
 
 		// Añadimos la fuente y generamos el stream como la salida de las llamadas
 		// asíncronas para salvar los datos en MongoDB
