@@ -30,9 +30,12 @@ import org.grouplens.lenskit.scored.ScoredId;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import data.streaming.dto.PatentDTO;
 import data.streaming.dto.ResearcherDTO;
 import data.streaming.dto.TweetDTO;
+import data.streaming.mongo.MongoPatentsRating;
 import data.streaming.mongo.MongoRecommendations;
+import data.streaming.mongo.MongoRecommendationsPatents;
 import data.streaming.mongo.MongoResearchersRating;
 
 public class Utils {
@@ -85,6 +88,21 @@ public class Utils {
 		Recommender rec = LenskitRecommender.build(config);
 		return rec.getItemRecommender();
 	}
+	
+	public static ItemRecommender getRecommenderPatents(Set<PatentDTO> dtos) throws RecommenderBuildException {
+		LenskitConfiguration config = new LenskitConfiguration();
+		EventDAO myDAO = EventCollectionDAO.create(createEventCollectionPatents(dtos));
+
+		config.bind(EventDAO.class).to(myDAO);
+		config.bind(ItemScorer.class).to(UserUserItemScorer.class);
+		// config.bind(BaselineScorer.class,
+		// ItemScorer.class).to(UserMeanItemScorer.class);
+		// config.bind(UserMeanBaseline.class,
+		// ItemScorer.class).to(ItemMeanRatingItemScorer.class);
+
+		Recommender rec = LenskitRecommender.build(config);
+		return rec.getItemRecommender();
+	}
 
 	private static Collection<? extends Event> createEventCollection(Set<ResearcherDTO> ratings) {
 		List<Event> result = new LinkedList<>();
@@ -93,6 +111,19 @@ public class Utils {
 			MutableRating r = new MutableRating();
 			r.setItemId(dto.getFirstResearcher().hashCode());
 			r.setUserId(dto.getSecondResearcher().hashCode());
+			r.setRating(dto.getRating());
+			result.add(r);
+		}
+		return result;
+	}
+	
+	private static Collection<? extends Event> createEventCollectionPatents(Set<PatentDTO> ratings) {
+		List<Event> result = new LinkedList<>();
+
+		for (PatentDTO dto : ratings) {
+			MutableRating r = new MutableRating();
+			r.setItemId(dto.getFirstPatent().hashCode());
+			r.setUserId(dto.getSecondPatent().hashCode());
 			r.setRating(dto.getRating());
 			result.add(r);
 		}
@@ -120,6 +151,27 @@ public class Utils {
 		MongoRecommendations.save(result);
 	}
 	
+	public static void saveModelPatents(ItemRecommender irec, Set<PatentDTO> set) throws IOException {
+		Map<String, Long> keys = Maps.asMap(set.stream().map((PatentDTO x) -> x.getFirstPatent()).collect(Collectors.toSet()),
+				(String y) -> new Long(y.hashCode()));
+		Map<Long, List<String>> reverse = set.stream().map((PatentDTO x) -> x.getFirstPatent())
+				.collect(Collectors.groupingBy((String x) -> new Long(x.hashCode())));
+		List<org.bson.Document> result = new ArrayList<>();
+
+		for (String key : keys.keySet()) {
+			List<ScoredId> recommendations = irec.recommend(keys.get(key), MAX_RECOMMENDATIONS);
+			if (recommendations.size() > 0) {
+				/* System.out.println(key + "->" + recommendations.stream().map(x -> reverse.get(x.getId()).get(0))
+						.collect(Collectors.toList()));*/
+				result.add(MongoRecommendationsPatents.recommendation(key, recommendations.stream().map(x -> reverse.get(x.getId()).get(0))
+						.collect(Collectors.toList())));
+			}
+		}
+		
+		/* Almaceno las recomendaciones en mLab*/
+		MongoRecommendationsPatents.save(result);
+	}
+	
 	public static Set<ResearcherDTO> researcherDTOs() {
 		/* Obtengo las keywords con su correspondiente rating */
 		Iterable<org.bson.Document> ratings = MongoResearchersRating.getResearchersRatingCollection().find();
@@ -131,6 +183,21 @@ public class Utils {
 			researcherDTO.setSecondResearcher(dto.getString("secondResearcher"));
 			researcherDTO.setRating(dto.getInteger("rating"));
 			result.add(researcherDTO);
+		}
+		return result;
+	}
+	
+	public static Set<PatentDTO> patentsDTOs() {
+		/* Obtengo las keywords con su correspondiente rating */
+		Iterable<org.bson.Document> ratings = MongoPatentsRating.getPatentsRatingCollection().find();
+		Set<PatentDTO> result = new HashSet<>();
+	
+		for (org.bson.Document dto: ratings) {
+			PatentDTO patentDTO = new PatentDTO();
+			patentDTO.setFirstPatent(dto.getString("firstPatent"));
+			patentDTO.setSecondPatent(dto.getString("secondPatent"));
+			patentDTO.setRating(dto.getInteger("rating"));
+			result.add(patentDTO);
 		}
 		return result;
 	}

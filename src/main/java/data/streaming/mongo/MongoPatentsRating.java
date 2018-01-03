@@ -119,7 +119,7 @@ public class MongoPatentsRating {
                     
                     limit++;
                     
-                    if (limit == 100) {
+                    if (limit == 2000) {
                     	break;
                     }
                 }
