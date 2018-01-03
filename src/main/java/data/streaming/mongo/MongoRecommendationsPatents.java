@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
@@ -26,7 +27,7 @@ public class MongoRecommendationsPatents {
 		docRecommendations.insertMany(recommendations);
 	}
 	
-	public static org.bson.Document recommendation(String idPatent, List<String> patents){
+	public static org.bson.Document recommendation(String idPatent, Set<String> researchers){
 		//Convierto la fecha de Twitter a Date
 		Date sysdate = new Date();
 		
@@ -35,7 +36,7 @@ public class MongoRecommendationsPatents {
         String createdAt = formatter.format(sysdate);
 		
 		org.bson.Document document = new org.bson.Document("idPatent", idPatent)
-				.append("patents", patents)
+				.append("researchers", researchers)
                 .append("createdAt", createdAt);
 	
 		
