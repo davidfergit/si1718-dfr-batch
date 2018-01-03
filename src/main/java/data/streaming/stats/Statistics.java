@@ -11,6 +11,7 @@ import data.streaming.dto.ResearcherDTO;
 import data.streaming.mongo.MongoDepartments;
 import data.streaming.mongo.MongoGroups;
 import data.streaming.mongo.MongoKeywords;
+import data.streaming.mongo.MongoPatentsRating;
 import data.streaming.mongo.MongoRecommendations;
 import data.streaming.mongo.MongoResearchers;
 import data.streaming.mongo.MongoResearchersRating;
@@ -75,27 +76,29 @@ public class Statistics implements Runnable {
             	
     			
     			/**
-            	 * Ratings
+            	 * Ratings Researchers
             	 * 
             	 * */
     			
-            	/* Elimino los elementos de la collection researchers rating */
+            	/* Elimino los elementos de la collection researchersRating */
             	MongoResearchersRating.getResearchersRatingCollection().deleteMany(document);
             	
             	/* Sistema de recomendación, calculamos el rating por cada par de investigadoes */
             	MongoResearchersRating.ratingCalculated();
             	
-            	
             	/**
-            	 * Web scraping
+            	 * Ratings Patents
             	 * 
             	 * */
+    			
+            	/* Elimino los elementos de la collection patentsRating */
+            	MongoPatentsRating.getPatentsRatingCollection().deleteMany(document);
             	
-            	/* Web scraping diario de investigadores nuevos. Se almacenarán en una collection auxiliar. */
-            	JsoupResearcher.dailyScraping();
+            	/* Sistema de recomendación, calculamos el rating por cada par de patentes */
+            	MongoPatentsRating.ratingCalculated();
             	
             	/**
-            	 * Sistema de recomendación
+            	 * Sistema de recomendación researchers
             	 * 
             	 * */
             	
@@ -107,6 +110,27 @@ public class Statistics implements Runnable {
 				ItemRecommender irec = Utils.getRecommender(set);
 				Utils.saveModel(irec, set);
             	
+				/**
+            	 * Sistema de recomendación patents
+            	 * 
+            	 * */
+            	
+            	/* Elimino los elementos de la collection researchers rating */
+            	//MongoRecommendations.getRecommendationsCollection().deleteMany(document);
+            	
+            	/* Genero las recomendaciones */
+            	//Set<ResearcherDTO> set = Utils.researcherDTOs();
+				//ItemRecommender irec = Utils.getRecommender(set);
+				//Utils.saveModel(irec, set);
+				
+            	
+            	/**
+            	 * Web scraping
+            	 * 
+            	 * */
+            	
+            	/* Web scraping diario de investigadores nuevos. Se almacenarán en una collection auxiliar. */
+            	JsoupResearcher.dailyScraping();
             	
             	
             } catch (Exception e) {
