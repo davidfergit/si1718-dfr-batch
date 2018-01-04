@@ -166,7 +166,7 @@ public class JsoupResearcher {
             		List<String> forbiddenWords = Arrays.asList("a","ante","bajo","cabe","con","contra","de","desde","en","entre","hacia","hasta","para","por",
             				"según","sin","so","sobre","tras","durante","mediante","excepto","salvo","incluso","más","menos",
             				"el","la","los","las","un","uno","una","unos","unas", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", 
-            				"ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
+            				"ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "del", "and", "&", ":", "*", "(", ")", ",", ".");
             		Set<String> keywordsAux = new HashSet<String>();
             		
             		if (researcher.getGroup() != null && !researcher.getGroup().equals("")) {
