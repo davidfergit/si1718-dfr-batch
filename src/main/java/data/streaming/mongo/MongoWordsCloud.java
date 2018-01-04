@@ -1,6 +1,7 @@
 package data.streaming.mongo;
 
 import java.text.DateFormat;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +48,9 @@ public class MongoWordsCloud {
 			if (researcher.getString("idGroup") != null && !researcher.getString("idGroup").equals("") &&
 				researcher.getString("idDepartment") != null && !researcher.getString("idDepartment").equals("")) {
 				List<String> keywords = Arrays.asList(researcher.getString("keywords").split(","));
+				for (int i = 0; i < keywords.size(); i++) {
+					keywords.set(i, Normalizer.normalize(keywords.get(i), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", ""));
+				}
 				totalKeywords.addAll(keywords);
 			}
 		}
