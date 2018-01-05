@@ -8,12 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -26,9 +22,10 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-import data.streaming.mongo.MongoWordsCloud;
+import data.streaming.mongo.MongoWordsCloudV2;
+import data.streaming.opennlp.KeywordsTagger;
 
-public class JsoupResearcherScraping {
+public class JsoupResearcherScrapingV2 {
 	
 	private static final String URL_BASE = "http://investigacion.us.es/sisius/sisius.php";
 	
@@ -47,7 +44,7 @@ public class JsoupResearcherScraping {
 		MongoClientURI uri  = new MongoClientURI("mongodb://researchers:researchers@ds255455.mlab.com:55455/si1718-dfr-researchers"); 
         MongoClient client = new MongoClient(uri);
         MongoDatabase db = client.getDatabase(uri.getDatabase());
-        MongoCollection<org.bson.Document> docResearchers = db.getCollection("researchers");
+        MongoCollection<org.bson.Document> docResearchers = db.getCollection("researchersV2");
         
         /* Elimino los elementos de la collection dailyResearchers */
 		BasicDBObject document = new BasicDBObject();
@@ -162,43 +159,36 @@ public class JsoupResearcherScraping {
             		}
             		
             		/* ASIGNACION DE KEYWORDS */
-            		List<String> forbiddenWords = Arrays.asList("a","ante","bajo","cabe","con","contra","de","desde","en","entre","hacia","hasta","para","por",
-            				"según","sin","so","sobre","tras","durante","mediante","excepto","salvo","incluso","más","menos",
-            				"el","la","los","las","un","uno","una","unos","unas", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", 
-            				"ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "del", "and", "&", ":", "*", "(", ")", ",", ".");
-            		Set<String> keywordsAux = new HashSet<String>();
+            		String sentence = "";
             		
-            		if (researcher.getGroup() != null && !researcher.getGroup().equals("")) {
-            			keywordsAux.addAll(Arrays.asList(researcher.getGroup().toLowerCase().split(" ")));
-            		}else if (researcher.getDepartment() != null && !researcher.getDepartment().equals("")) {
-            			keywordsAux.addAll(Arrays.asList(researcher.getDepartment().toLowerCase().split(" ")));
-            		}else if (researcher.getProfessionalSituation() != null && !researcher.getProfessionalSituation().equals("")){
-            			keywordsAux.addAll(Arrays.asList(researcher.getProfessionalSituation().toLowerCase().split(" ")));
-            		}else if (researcher.getName() != null && !researcher.getName().equals("")){
-            			keywordsAux.addAll(Arrays.asList(researcher.getName().toLowerCase().split(" ")));
-            			keywordsAux.add("key-us");
-            			keywordsAux.add("universidad");
-            			keywordsAux.add("sevilla");
-            		}else {
-            			keywordsAux.add("key-us");
-            			keywordsAux.add("universidad");
-            			keywordsAux.add("sevilla");
-            		}
-            		
-            		/* Elimino las palabras prohibidas */
-            		keywordsAux.removeAll(forbiddenWords);
-            		
-            		/* Elimino los espacios en blanco */
-            		keywordsAux.removeAll(keywordsAux.stream()
-            			      .filter(s -> s.equals(""))
-            			      .collect(Collectors.toSet()));
-            		
-            		/* Elimino los nulos */
-            		keywordsAux.removeIf(Objects::isNull);
-            		
-            		String keywordsCommaSeparated = keywordsAux.stream()
-                            .map(String::toLowerCase)
-                            .collect(Collectors.joining(","));
+            		try {
+						
+            			if (researcher.getGroup() != null && !researcher.getGroup().equals("")) {
+                			
+                			sentence = KeywordsTagger.keywordsTagger(researcher.getGroup());
+                			
+                		}else if (researcher.getDepartment() != null && !researcher.getDepartment().equals("")) {
+                			
+                			sentence = KeywordsTagger.keywordsTagger(researcher.getDepartment());
+                			
+                		}else if (researcher.getProfessionalSituation() != null && !researcher.getProfessionalSituation().equals("")){
+                			
+                			sentence = KeywordsTagger.keywordsTagger(researcher.getProfessionalSituation());
+                			
+                		}else if (researcher.getName() != null && !researcher.getName().equals("")){
+                			
+                			sentence = KeywordsTagger.keywordsTagger(researcher.getName());
+                			sentence += ",key-us,universidad,sevilla";
+                			
+                		}else {
+                			
+                			sentence = "key-us,universidad,sevilla";
+                			
+                		}
+            			
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
             		
             		//Convierto la fecha de Twitter a Date
             		Date sysdate = new Date();
@@ -215,7 +205,7 @@ public class JsoupResearcherScraping {
                             .append("researcherId", researcher.getResearcherId())
                             .append("link", researcher.getLink())
                             .append("idGroup", researcher.getGroup())
-                            .append("keywords", keywordsCommaSeparated)
+                            .append("keywords", sentence)
                             .append("viewURL", "https://si1718-dfr-researchers.herokuapp.com/#!/researchers/" + researcher.getIdResearcher() + "/view")
                             .append("idDepartment", researcher.getDepartment())
                             .append("departmentViewURL", null)
@@ -252,7 +242,7 @@ public class JsoupResearcherScraping {
         client.close();
         
         /* Genero la nube de palabras */
-        MongoWordsCloud.createWordsCloud();
+        MongoWordsCloudV2.createWordsCloud();
 		
 	}
 

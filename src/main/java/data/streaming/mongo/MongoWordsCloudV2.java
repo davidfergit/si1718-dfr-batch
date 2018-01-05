@@ -19,13 +19,13 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-public class MongoWordsCloud {
+public class MongoWordsCloudV2 {
 	
 	private static final MongoClientURI uri  = new MongoClientURI("mongodb://researchers:researchers@ds255455.mlab.com:55455/si1718-dfr-researchers"); 
     private static final MongoClient client = new MongoClient(uri);
     private static MongoDatabase db = client.getDatabase(uri.getDatabase());
-    private static final MongoCollection<org.bson.Document> docWordsCloud = db.getCollection("wordsCloud");
-    private static final MongoCollection<org.bson.Document> docResearchers = db.getCollection("researchers");
+    private static final MongoCollection<org.bson.Document> docWordsCloud = db.getCollection("wordsCloudV2");
+    private static final MongoCollection<org.bson.Document> docResearchers = db.getCollection("researchersV2");
     
     /* Método usado para obtener la collection de wordsCloud */
 	public static MongoCollection<org.bson.Document> getWordsCloudCollection(){
