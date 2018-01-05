@@ -6,7 +6,7 @@ import org.grouplens.lenskit.ItemRecommender;
 
 import com.mongodb.BasicDBObject;
 
-import data.scraping.jsoup.JsoupResearcher;
+import data.scraping.jsoup.JsoupResearcherDailyScraping;
 import data.streaming.dto.PatentDTO;
 import data.streaming.dto.ResearcherDTO;
 import data.streaming.mongo.MongoDepartments;
@@ -132,7 +132,7 @@ public class Statistics implements Runnable {
             	 * */
             	
             	/* Web scraping diario de investigadores nuevos. Se almacenarán en una collection auxiliar. */
-            	JsoupResearcher.dailyScraping();
+            	JsoupResearcherDailyScraping.dailyScraping();
             	
             	
             } catch (Exception e) {

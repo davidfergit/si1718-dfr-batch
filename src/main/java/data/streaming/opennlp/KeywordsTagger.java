@@ -13,7 +13,7 @@ import opennlp.tools.tokenize.WhitespaceTokenizer;
 
 public class KeywordsTagger {
 
-	public static void main(String[] args) throws Exception {
+	public static String keywordsTagger(String sentence) throws Exception {
 			
 		/**
 		 *  UNIVERSAL SPEECH TAGS
@@ -42,7 +42,7 @@ public class KeywordsTagger {
 	       
 	    //Tokenizing the sentence 
 	    //String sentence = "Hi welcome to Tutorialspoint"; 
-	    String sentence = "Union Europea y Estado Autonomico";
+	    //String sentence = "Andaluz de Pragmatica";
 	    String[] tokens = whitespaceTokenizer.tokenize(sentence); 
 	       
 	    //Instantiating POSTaggerME class 
@@ -79,8 +79,7 @@ public class KeywordsTagger {
 	    String keywordsCommaSeparated = keywordsSelected.stream()
 	                                        .collect(Collectors.joining(","));
 	    
-	    System.out.println(keywordsCommaSeparated);
-	    
+	    return keywordsCommaSeparated;
 	}
 
 }

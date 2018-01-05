@@ -25,25 +25,12 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
 
-public class JsoupResearcher {
+public class JsoupResearcherScraping {
 	
 	private static final String URL_BASE = "http://investigacion.us.es/sisius/sisius.php";
-	private static final MongoClientURI uri  = new MongoClientURI("mongodb://researchers:researchers@ds255455.mlab.com:55455/si1718-dfr-researchers"); 
-    private static final MongoClient client = new MongoClient(uri);
-    private static MongoDatabase db = client.getDatabase(uri.getDatabase());
-    private static final MongoCollection<org.bson.Document> docResearchers = db.getCollection("dailyResearchers");
-    private static final MongoCollection<org.bson.Document> docResearchersAux = db.getCollection("researchers");
-    
-	public static void dailyScraping() throws MalformedURLException, IOException {
-		
-    	/* Elimino los elementos de la collection dailyResearchers */
-		BasicDBObject document = new BasicDBObject();
-		docResearchers.deleteMany(document);
-		
-		/* Genero researchers nuevos para testear la funcionalidad de insertar aquellos investigadores que hayan aparecido recientemente. */
-		createRandomResearchers(3);
+	
+	public static void main(String[] args) throws MalformedURLException, IOException {
 		
 		/* Obtengo todos los investigadores */
 		Document researchers = Jsoup
@@ -53,6 +40,16 @@ public class JsoupResearcher {
                 .data("inside", "1")
                 .maxBodySize(10 * 1024 * 1024)
 				.post();
+		
+		/* UTILIZADO EN LA OPCIÓN 1 Y 2 */
+		MongoClientURI uri  = new MongoClientURI("mongodb://researchers:researchers@ds255455.mlab.com:55455/si1718-dfr-researchers"); 
+        MongoClient client = new MongoClient(uri);
+        MongoDatabase db = client.getDatabase(uri.getDatabase());
+        MongoCollection<org.bson.Document> docResearchers = db.getCollection("researchers");
+        
+        /* Elimino los elementos de la collection dailyResearchers */
+		BasicDBObject document = new BasicDBObject();
+		docResearchers.deleteMany(document);
         
         /* INSERTAR EL DOCUMENTO DE TODOS LOS RESEARCHER EN UNA SOLA LLAMADA (LLAMANDO A MLAB DIRECTAMENTE) */
         List<org.bson.Document> researchersToInsert = new ArrayList<org.bson.Document>();
@@ -223,23 +220,16 @@ public class JsoupResearcher {
                             .append("departmentName", null)
                     		.append("createdAt", createdAt);
                     
-                    /* INSERTAR EL DOCUMENTO DE TODOS LOS RESEARCHER EN UNA SOLA LLAMADA (LLAMANDO A MLAB DIRECTAMENTE) */
-                    /* Compruebo si el investigador que queremos insertar existe ya en la base de datos y de ser así se descarta. */
-                    long checkNewResearcher = docResearchersAux.count(Filters.eq("idResearcher",researcher.getIdResearcher()));
-                    
-                    if (docResearcher != null && checkNewResearcher == 0 ) {
-                    	researchersToInsert.add(docResearcher);
-                    	System.out.println("NUEVO");
+                    if (docResearcher != null) {
+                    	researchersToInsert.add(docResearcher);                    	
                     	/* INCREMENTO LA VARIABLE LOTERESEARCHER */
                         loteResearchers++;
-                    }else {
-                    	System.out.println("YA EXISTE");
                     }
                 }
             }
             
             /* USADO PARA LOTES */
-            if (loteResearchers == 500 && researchersToInsert != null && researchersToInsert.size() > 0) {
+            if (loteResearchers == 500) {
             	/* INSERTAR EL DOCUMENTO DE TODOS LOS RESEARCHER EN UNA SOLA LLAMADA (LLAMANDO A MLAB DIRECTAMENTE) */
                 docResearchers.insertMany(researchersToInsert);
                 researchersToInsert = new ArrayList<>();
@@ -258,39 +248,6 @@ public class JsoupResearcher {
         
         /* Cierro la conexion de mongoDB */
         client.close();
-		
-	}
-	
-	public static void createRandomResearchers(int numberOfResearchers) {
-		List<org.bson.Document> researchersToInsert = new ArrayList<org.bson.Document>();
-		
-		for (int i=1; i <= numberOfResearchers; i++) {
-			//Convierto la fecha de Twitter a Date
-    		Date sysdate = new Date();
-    		
-    		//Formato dd/MM/yyyy
-    		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
-            String createdAt = formatter.format(sysdate);
-    		
-            org.bson.Document docResearcher = new org.bson.Document("idResearcher", "investigador"+i)
-                    .append("name", "Investigador Name " + i)
-                    .append("phone", "Investigador Phone " + i)
-                    .append("professionalSituation", "Active")
-                    .append("orcid", null)
-                    .append("researcherId", null)
-                    .append("link", null)
-                    .append("idGroup", null)
-                    .append("keywords", "investigador" + i)
-                    .append("viewURL", "https://si1718-dfr-researchers.herokuapp.com/#!/researchers/" + "investigador" + i + "/view")
-                    .append("idDepartment", null)
-                    .append("departmentViewURL", null)
-                    .append("departmentName", null)
-            		.append("createdAt", createdAt);
-            
-            researchersToInsert.add(docResearcher);
-		}
-		
-		docResearchers.insertMany(researchersToInsert);
 		
 	}
 
